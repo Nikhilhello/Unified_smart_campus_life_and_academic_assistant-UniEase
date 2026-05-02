@@ -1,0 +1,69 @@
+{% extends 'base.html' %}
+
+{% block title %}Welcome to UniEase{% endblock %}
+
+{% block content %}
+<div class="hero-section">
+    <div class="hero-content">
+        <h1>Welcome to UniEase</h1>
+        <p class="hero-subtitle">Unified Smart Campus Life & Academic Assistant</p>
+        <p class="hero-description">
+            Your all-in-one platform for academics, campus life, and career readiness.
+            Experience seamless campus management with intelligent features designed for students, faculty, and
+            administrators.
+        </p>
+        <div class="hero-buttons">
+            <a href="{% url 'login' %}?role=student" class="btn btn-primary">Student Login</a>
+            <a href="{% url 'login' %}?role=staff" class="btn btn-secondary">Staff Login</a>
+        </div>
+        <a href="{% url 'register' %}" class="btn-link"
+            style="margin-top: 20px; display: block; text-align: center;">New User? Register</a>
+    </div>
+</div>
+
+<div class="features-section">
+    <h2>Key Features</h2>
+    <div class="features-grid">
+        <div class="feature-card">
+            <div class="feature-icon">📚</div>
+            <h3>Academic Hub</h3>
+            <p>Notes sharing, announcements, timetables, and deadline tracking all in one place</p>
+        </div>
+        <div class="feature-card">
+            <div class="feature-icon">❓</div>
+            <h3>Doubt Clearing</h3>
+            <p>Anonymous question posting with peer, senior, and faculty responses</p>
+        </div>
+        <div class="feature-card">
+            <div class="feature-icon">🔍</div>
+            <h3>Lost & Found</h3>
+            <p>Report and track lost items with category and location tagging</p>
+        </div>
+        <div class="feature-card">
+            <div class="feature-icon">🏠</div>
+            <h3>Hostel Management</h3>
+            <p>Register complaints and track resolution status in real-time</p>
+        </div>
+        <div class="feature-card">
+            <div class="feature-icon">📖</div>
+            <h3>Smart Library</h3>
+            <p>Book search, borrowing history, and seat availability tracking</p>
+        </div>
+        <div class="feature-card">
+            <div class="feature-icon">💼</div>
+            <h3>Placement Hub</h3>
+            <p>Job postings, application tracking, and career preparation resources</p>
+        </div>
+        <div class="feature-card">
+            <div class="feature-icon">🚌</div>
+            <h3>Transport & Mess</h3>
+            <p>Bus schedules, routes, delay notifications, and daily mess menus</p>
+        </div>
+        <div class="feature-card">
+            <div class="feature-icon">📊</div>
+            <h3>Performance Insights</h3>
+            <p>Track attendance, results, and get improvement suggestions</p>
+        </div>
+    </div>
+</div>
+{% endblock %}

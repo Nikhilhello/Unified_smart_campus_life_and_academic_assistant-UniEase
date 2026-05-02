@@ -1,0 +1,107 @@
+{% extends 'base.html' %}
+
+{% block title %}Library - UniEase{% endblock %}
+
+{% block content %}
+<div class="page-container">
+    <div class="page-header">
+        <h1>Smart Library System</h1>
+        <a href="{% url 'library_seats' %}" class="btn btn-secondary">View Seats</a>
+    </div>
+
+    {% if user_profile.role == 'librarian' %}
+    <div class="content-area" style="margin-bottom: 2rem;">
+        <h2>Add New Book</h2>
+        <form method="POST">
+            {% csrf_token %}
+            <div class="form-row">
+                <div class="form-group">
+                    <label>Title</label>
+                    <input type="text" name="title" required>
+                </div>
+                <div class="form-group">
+                    <label>Author</label>
+                    <input type="text" name="author" required>
+                </div>
+            </div>
+            <div class="form-row">
+                <div class="form-group">
+                    <label>ISBN</label>
+                    <input type="text" name="isbn" required>
+                </div>
+                <div class="form-group">
+                    <label>Category</label>
+                    <select name="category" required>
+                        <option value="Computer Science">Computer Science</option>
+                        <option value="Electronics">Electronics</option>
+                        <option value="Mechanical">Mechanical</option>
+                        <option value="Civil">Civil</option>
+                        <option value="Mathematics">Mathematics</option>
+                        <option value="Physics">Physics</option>
+                        <option value="Literature">Literature</option>
+                    </select>
+                </div>
+            </div>
+            <div class="form-group">
+                <label>Total Copies</label>
+                <input type="number" name="total_copies" value="1" min="1" required>
+            </div>
+            <button type="submit" class="btn btn-primary">Add Book</button>
+        </form>
+    </div>
+    {% endif %}
+
+    <div class="search-section">
+        <form method="GET" class="search-form">
+            <input type="text" name="search" placeholder="Search by title, author, or ISBN"
+                value="{{ request.GET.search }}">
+            <button type="submit" class="btn btn-primary">Search</button>
+        </form>
+    </div>
+
+    {% if borrowings %}
+    <div class="borrowed-books-section">
+        <h2>Your Borrowed Books</h2>
+        <div class="borrowed-list">
+            {% for borrowing in borrowings %}
+            <div class="borrowed-item">
+                <div>
+                    <strong>{{ borrowing.book.title }}</strong>
+                    <br>
+                    <small>Due: {{ borrowing.due_date }}</small>
+                </div>
+                <a href="{% url 'return_book' borrowing.id %}" class="btn btn-small">Return</a>
+            </div>
+            {% endfor %}
+        </div>
+    </div>
+    {% endif %}
+
+    <div class="books-grid">
+        {% if books %}
+        {% for book in books %}
+        <div class="book-card">
+            <h3>{{ book.title }}</h3>
+            <p class="book-author">by {{ book.author }}</p>
+            <div class="book-details">
+                <p><strong>ISBN:</strong> {{ book.isbn }}</p>
+                <p><strong>Category:</strong> {{ book.category }}</p>
+                <p><strong>Publisher:</strong> {{ book.publisher }}</p>
+                <p><strong>Year:</strong> {{ book.year }}</p>
+                <p><strong>Available:</strong> {{ book.available_copies }} / {{ book.total_copies }}</p>
+            </div>
+            {% if book.available_copies > 0 %}
+            <a href="{% url 'borrow_book' book.id %}" class="btn btn-primary btn-block">Borrow Book</a>
+            {% else %}
+            <button class="btn btn-disabled btn-block" disabled>Not Available</button>
+            {% endif %}
+        </div>
+        {% endfor %}
+        {% else %}
+        <div class="empty-state-large">
+            <p>No books found</p>
+        </div>
+        {% endif %}
+    </div>
+</div>
+{% endblock %}

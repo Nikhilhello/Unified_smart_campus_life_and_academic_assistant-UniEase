@@ -1,0 +1,103 @@
+{% extends 'base.html' %}
+
+{% block title %}Pending Approvals - UniEase{% endblock %}
+
+{% block content %}
+<div class="container mt-4">
+    <div class="row mb-4">
+        <div class="col">
+            <h2>Pending User Approvals</h2>
+            <p class="text-muted">The following users have registered as faculty or staff and require your approval to
+                access the platform.</p>
+        </div>
+        <div class="col-auto">
+            <a href="{% url 'dashboard' %}" class="btn btn-secondary">Back to Dashboard</a>
+        </div>
+    </div>
+
+    {% if messages %}
+    {% for message in messages %}
+    <div class="alert alert-{{ message.tags }} alert-dismissible fade show" role="alert">
+        {{ message }}
+        <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+    </div>
+    {% endfor %}
+    {% endif %}
+
+    <div class="card shadow-sm">
+        <div class="card-body p-0">
+            <div class="table-responsive">
+                <table class="table table-hover mb-0">
+                    <thead class="table-light">
+                        <tr>
+                            <th>User</th>
+                            <th>Role</th>
+                            <th>Department</th>
+                            <th>Email</th>
+                            <th>Applied On</th>
+                            <th class="text-end">Actions</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for profile in pending_users %}
+                        <tr>
+                            <td>
+                                <strong>{{ profile.user.get_full_name|default:profile.user.username }}</strong>
+                                <br>
+                                <small class="text-muted">@{{ profile.user.username }}</small>
+                            </td>
+                            <td><span class="badge bg-info text-dark">{{ profile.get_role_display }}</span></td>
+                            <td>{{ profile.department|default:"-" }}</td>
+                            <td>{{ profile.user.email }}</td>
+                            <td>{{ profile.user.date_joined|date:"M d, Y" }}</td>
+                            <td class="text-end">
+                                <form action="{% url 'approve_user' profile.id %}" method="POST" class="d-inline">
+                                    {% csrf_token %}
+                                    <button type="submit" class="btn btn-success btn-sm">Approve</button>
+                                </form>
+                                <form action="{% url 'reject_user' profile.id %}" method="POST" class="d-inline"
+                                    onsubmit="return confirm('Are you sure you want to reject this user? This will delete their account.')">
+                                    {% csrf_token %}
+                                    <button type="submit" class="btn btn-danger btn-sm">Reject</button>
+                                </form>
+                            </td>
+                        </tr>
+                        {% empty %}
+                        <tr>
+                            <td colspan="6" class="text-center py-5">
+                                <div class="empty-state">
+                                    <span class="display-4 d-block mb-3">🎉</span>
+                                    <h4>No pending approvals</h4>
+                                    <p class="text-muted">All registered users have been processed.</p>
+                                </div>
+                            </td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+</div>
+
+<style>
+    .item-list li {
+        padding: 15px;
+        border-bottom: 1px solid #eee;
+    }
+
+    .item-list li:last-child {
+        border-bottom: none;
+    }
+
+    .badge {
+        font-weight: 500;
+        padding: 5px 10px;
+    }
+
+    .btn-sm {
+        padding: 4px 12px;
+        font-size: 0.85rem;
+    }
+</style>
+{% endblock %}

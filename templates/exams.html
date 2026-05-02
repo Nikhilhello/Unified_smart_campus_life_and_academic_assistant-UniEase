@@ -1,0 +1,40 @@
+{% extends 'base.html' %}
+
+{% block title %}Exams - UniEase{% endblock %}
+
+{% block content %}
+<div class="page-container">
+    <div class="page-header">
+        <h1>Examination Schedule</h1>
+        {% if user.profile.role == 'faculty' %}
+        <a href="{% url 'create_exam' %}" class="btn btn-primary">Create Exam</a>
+        {% endif %}
+    </div>
+
+    <div class="exams-list">
+        {% if exams %}
+        {% for exam in exams %}
+        <div class="exam-card">
+            <div class="exam-header">
+                <h3>{{ exam.exam_name }}</h3>
+                <span class="badge">{{ exam.subject }}</span>
+            </div>
+            <div class="exam-details">
+                <p><strong>Date:</strong> {{ exam.date }}</p>
+                <p><strong>Time:</strong> {{ exam.time }}</p>
+                <p><strong>Duration:</strong> {{ exam.duration }}</p>
+                <p><strong>Hall:</strong> {{ exam.hall }}</p>
+                {% if exam.seat_number %}
+                <p><strong>Seat:</strong> {{ exam.seat_number }}</p>
+                {% endif %}
+            </div>
+        </div>
+        {% endfor %}
+        {% else %}
+        <div class="empty-state-large">
+            <p>No exams scheduled</p>
+        </div>
+        {% endif %}
+    </div>
+</div>
+{% endblock %}

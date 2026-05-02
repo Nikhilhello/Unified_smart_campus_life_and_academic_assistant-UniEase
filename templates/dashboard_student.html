@@ -1,0 +1,120 @@
+{% extends 'base.html' %}
+
+{% block title %}Student Dashboard - UniEase{% endblock %}
+
+{% block content %}
+<div class="dashboard-container">
+    <div class="dashboard-header">
+        <h1>Welcome, {{ user.first_name }}!</h1>
+        <p class="user-info">
+            <span class="role-tag">Student</span>
+            {% if user_profile.year %}<span class="separator">•</span> {{ user_profile.year }} Year{% endif %}
+            {% if user_profile.department %}<span class="separator">•</span> {{ user_profile.department }}{% endif %}
+            <span class="separator">•</span> <a href="{% url 'edit_profile' %}" class="edit-profile-link">Edit
+                Profile</a>
+        </p>
+    </div>
+
+    <!-- Student Stats -->
+    <div class="stats-grid">
+        <div class="stat-card">
+            <div class="stat-icon">📝</div>
+            <div class="stat-content">
+                <h3>{{ upcoming_exams.count }}</h3>
+                <p>Upcoming Exams</p>
+            </div>
+        </div>
+        <div class="stat-card">
+            <div class="stat-icon">📚</div>
+            <div class="stat-content">
+                <h3>{{ borrowed_books }}</h3>
+                <p>Borrowed Books</p>
+            </div>
+        </div>
+        <div class="stat-card">
+            <div class="stat-icon">🏠</div>
+            <div class="stat-content">
+                <h3>{{ pending_complaints }}</h3>
+                <p>Open Complaints</p>
+            </div>
+        </div>
+        <div class="stat-card">
+            <div class="stat-icon">🔔</div>
+            <div class="stat-content">
+                <h3>{{ notifications.count }}</h3>
+                <p>Notifications</p>
+            </div>
+        </div>
+    </div>
+
+    <div class="dashboard-sections">
+        <!-- Upcoming Exams -->
+        <div class="section-card">
+            <div class="card-header-flex">
+                <h2>Upcoming Exams</h2>
+                <a href="{% url 'exams' %}" class="btn btn-sm">View All</a>
+            </div>
+            {% if upcoming_exams %}
+            <ul class="item-list">
+                {% for exam in upcoming_exams %}
+                <li>
+                    <div class="item-header">
+                        <strong>{{ exam.subject }}</strong>
+                        <span class="badge badge-primary">{{ exam.date|date:"M d" }}</span>
+                    </div>
+                    <p class="item-meta">{{ exam.exam_name }} • {{ exam.time }} • {{ exam.hall }}</p>
+                </li>
+                {% endfor %}
+            </ul>
+            {% else %}
+            <p class="empty-state">No upcoming exams scheduled. Time to relax! 🎮</p>
+            {% endif %}
+        </div>
+
+        <!-- Announcements -->
+        <div class="section-card">
+            <div class="card-header-flex">
+                <h2>Announcements</h2>
+                <a href="{% url 'announcements' %}" class="btn btn-sm">View All</a>
+            </div>
+            {% if announcements %}
+            <ul class="item-list">
+                {% for announcement in announcements %}
+                <li>
+                    <div class="item-header">
+                        <strong>{{ announcement.title }}</strong>
+                        <span class="badge badge-{{ announcement.priority }}">{{ announcement.priority }}</span>
+                    </div>
+                    <p class="item-excerpt">{{ announcement.content|truncatewords:15 }}</p>
+                </li>
+                {% endfor %}
+            </ul>
+            {% else %}
+            <p class="empty-state">No new announcements.</p>
+            {% endif %}
+        </div>
+    </div>
+
+    <!-- Quick Actions -->
+    <div class="quick-actions">
+        <h2>Quick Actions</h2>
+        <div class="action-buttons">
+            <a href="{% url 'create_complaint' %}" class="action-btn">
+                <span class="action-icon">📢</span> File Complaint
+            </a>
+            <a href="{% url 'ask_doubt' %}" class="action-btn">
+                <span class="action-icon">❓</span> Ask Doubt
+            </a>
+            <a href="{% url 'library' %}" class="action-btn">
+                <span class="action-icon">📖</span> Library
+            </a>
+            <a href="{% url 'timetable' %}" class="action-btn">
+                <span class="action-icon">📅</span> Timetable
+            </a>
+            <a href="{% url 'academic_vault' %}" class="action-btn">
+                <span class="action-icon">🔐</span> Vault
+            </a>
+        </div>
+    </div>
+</div>
+{% endblock %}

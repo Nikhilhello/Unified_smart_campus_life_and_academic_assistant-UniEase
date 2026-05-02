@@ -1,0 +1,42 @@
+{% extends 'base.html' %}
+
+{% block title %}Timetable - UniEase{% endblock %}
+
+{% block content %}
+<div class="page-container">
+    <div class="page-header">
+        <h1>Class Timetable</h1>
+    </div>
+
+    <div class="timetable-container">
+        {% if timetable %}
+        <table class="timetable-table">
+            <thead>
+                <tr>
+                    <th>Day</th>
+                    <th>Time Slot</th>
+                    <th>Subject</th>
+                    <th>Faculty</th>
+                    <th>Room</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for entry in timetable %}
+                <tr>
+                    <td>{{ entry.day }}</td>
+                    <td>{{ entry.time_slot }}</td>
+                    <td>{{ entry.subject }}</td>
+                    <td>{{ entry.faculty }}</td>
+                    <td>{{ entry.room }}</td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+        {% else %}
+        <div class="empty-state-large">
+            <p>No timetable available for your class</p>
+        </div>
+        {% endif %}
+    </div>
+</div>
+{% endblock %}

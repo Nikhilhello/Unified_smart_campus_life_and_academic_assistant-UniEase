@@ -1,0 +1,72 @@
+{% extends 'base.html' %}
+
+{% block title %}Mess Menu - UniEase{% endblock %}
+
+{% block content %}
+<div class="page-container">
+    <div class="page-header">
+        <h1>Mess Menu & Ratings</h1>
+    </div>
+
+    <div class="mess-menu">
+        {% if user_profile.role == 'mess_head' %}
+        <div class="content-area" style="margin-bottom: 2rem;">
+            <h2>Update Menu</h2>
+            <form method="POST">
+                {% csrf_token %}
+                <div class="form-row">
+                    <div class="form-group">
+                        <label>Day</label>
+                        <select name="day" required>
+                            {% for day in days %}
+                            <option value="{{ day }}">{{ day }}</option>
+                            {% endfor %}
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label>Meal Type</label>
+                        <select name="meal_type" required>
+                            <option value="Breakfast">Breakfast</option>
+                            <option value="Lunch">Lunch</option>
+                            <option value="Snacks">Snacks</option>
+                            <option value="Dinner">Dinner</option>
+                        </select>
+                    </div>
+                </div>
+                <div class="form-group">
+                    <label>Menu Items</label>
+                    <textarea name="items" rows="3" required placeholder="E.g., Idli, Sambar, Chutney..."></textarea>
+                </div>
+                <button type="submit" class="btn btn-primary">Update Menu</button>
+            </form>
+        </div>
+        {% endif %}
+        {% if menus %}
+        {% regroup menus by day as day_list %}
+        {% for day_group in day_list %}
+        <div class="menu-day">
+            <h2>{{ day_group.grouper }}</h2>
+            <div class="menu-meals">
+                {% for menu in day_group.list %}
+                <div class="meal-card">
+                    <div class="meal-header">
+                        <h3>{{ menu.meal_type|title }}</h3>
+                        <div class="meal-rating">
+                            ⭐ {{ menu.rating|floatformat:1 }} ({{ menu.total_ratings }})
+                        </div>
+                    </div>
+                    <p class="meal-items">{{ menu.items }}</p>
+                    <a href="{% url 'rate_mess' menu.id %}" class="btn btn-small">Rate</a>
+                </div>
+                {% endfor %}
+            </div>
+        </div>
+        {% endfor %}
+        {% else %}
+        <div class="empty-state-large">
+            <p>No menu available</p>
+        </div>
+        {% endif %}
+    </div>
+</div>
+{% endblock %}

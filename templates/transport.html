@@ -1,0 +1,37 @@
+{% extends 'base.html' %}
+
+{% block title %}Transport - UniEase{% endblock %}
+
+{% block content %}
+<div class="page-container">
+    <div class="page-header">
+        <h1>Bus Routes & Schedules</h1>
+    </div>
+
+    <div class="routes-list">
+        {% if routes %}
+        {% for route in routes %}
+        <div class="route-card">
+            <div class="route-header">
+                <h3>Bus {{ route.route_number }}: {{ route.route_name }}</h3>
+                {% if route.is_delayed %}
+                <span class="badge badge-warning">Delayed by {{ route.delay_minutes }} min</span>
+                {% else %}
+                <span class="badge badge-success">On Time</span>
+                {% endif %}
+            </div>
+            <div class="route-details">
+                <p><strong>Departure:</strong> {{ route.departure_time }}</p>
+                <p><strong>Arrival:</strong> {{ route.arrival_time }}</p>
+                <p><strong>Stops:</strong> {{ route.stops }}</p>
+            </div>
+        </div>
+        {% endfor %}
+        {% else %}
+        <div class="empty-state-large">
+            <p>No bus routes available</p>
+        </div>
+        {% endif %}
+    </div>
+</div>
+{% endblock %}

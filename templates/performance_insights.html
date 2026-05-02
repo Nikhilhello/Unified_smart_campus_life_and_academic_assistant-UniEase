@@ -1,0 +1,82 @@
+{% extends 'base.html' %}
+
+{% block title %}Performance Insights - UniEase{% endblock %}
+
+{% block content %}
+<div class="page-container">
+    <div class="page-header">
+        <h1>Performance Insights & Analytics</h1>
+        <a href="{% url 'academic_vault' %}" class="btn btn-secondary">Back to Vault</a>
+    </div>
+
+    {% if message %}
+    <div class="empty-state-large">
+        <p>{{ message }}</p>
+        <a href="{% url 'add_academic_record' %}" class="btn btn-primary">Add Records</a>
+    </div>
+    {% else %}
+    <div class="insights-container">
+        <div class="stats-grid">
+            <div class="stat-card">
+                <div class="stat-icon">📊</div>
+                <div class="stat-content">
+                    <h3>{{ overall_percentage }}%</h3>
+                    <p>Overall Percentage</p>
+                </div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-icon">📚</div>
+                <div class="stat-content">
+                    <h3>{{ total_subjects }}</h3>
+                    <p>Total Subjects</p>
+                </div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-icon">📅</div>
+                <div class="stat-content">
+                    <h3>{{ avg_attendance }}%</h3>
+                    <p>Average Attendance</p>
+                </div>
+            </div>
+        </div>
+
+        <div class="performance-section">
+            <h2>Semester-wise Performance</h2>
+            <div class="semester-list">
+                {% for sem in semester_data %}
+                <div class="semester-card">
+                    <h3>Semester {{ sem.semester }}</h3>
+                    <div class="progress-bar">
+                        <div class="progress-fill" style="width: {{ sem.percentage }}%"></div>
+                    </div>
+                    <p>{{ sem.percentage }}%</p>
+                </div>
+                {% endfor %}
+            </div>
+        </div>
+
+        <div class="suggestions-section">
+            <h2>Improvement Suggestions</h2>
+            <ul class="suggestions-list">
+                {% if overall_percentage < 60 %}
+                <li class="suggestion-item warning">Focus on core concepts and seek help from faculty</li>
+                <li class="suggestion-item">Increase study time and consistency</li>
+                {% elif overall_percentage < 75 %}
+                <li class="suggestion-item">Good progress! Work on time management</li>
+                <li class="suggestion-item">Focus on weaker subjects</li>
+                {% else %}
+                <li class="suggestion-item success">Excellent performance! Keep it up</li>
+                <li class="suggestion-item">Consider mentoring juniors</li>
+                {% endif %}
+                
+                {% if avg_attendance < 75 %}
+                <li class="suggestion-item warning">Attendance needs improvement to meet minimum requirements</li>
+                {% elif avg_attendance < 85 %}
+                <li class="suggestion-item">Try to maintain consistent attendance</li>
+                {% endif %}
+            </ul>
+        </div>
+    </div>
+    {% endif %}
+</div>
+{% endblock %}

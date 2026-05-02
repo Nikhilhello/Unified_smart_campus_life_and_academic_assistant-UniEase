@@ -1,0 +1,67 @@
+{% extends 'base.html' %}
+
+{% block title %}Academic Vault - UniEase{% endblock %}
+
+{% block content %}
+<div class="page-container">
+    <div class="page-header">
+        <h1>Personal Academic Vault</h1>
+        <div class="header-actions">
+            <a href="{% url 'performance_insights' %}" class="btn btn-secondary">Performance Insights</a>
+            <a href="{% url 'upload_certificate' %}" class="btn btn-primary">Upload Certificate</a>
+            <a href="{% url 'add_academic_record' %}" class="btn btn-primary">Add Record</a>
+        </div>
+    </div>
+
+    <div class="vault-sections">
+        <div class="vault-section">
+            <h2>Certificates</h2>
+            {% if certificates %}
+            <div class="certificates-list">
+                {% for certificate in certificates %}
+                <div class="certificate-card">
+                    <h3>{{ certificate.title }}</h3>
+                    <p><strong>Issuer:</strong> {{ certificate.issuer }}</p>
+                    <p><strong>Date:</strong> {{ certificate.issue_date }}</p>
+                    <p><strong>Category:</strong> {{ certificate.category }}</p>
+                    <a href="{{ certificate.certificate_file.url }}" target="_blank" class="btn btn-small">View</a>
+                </div>
+                {% endfor %}
+            </div>
+            {% else %}
+            <p class="empty-state">No certificates uploaded</p>
+            {% endif %}
+        </div>
+
+        <div class="vault-section">
+            <h2>Academic Records</h2>
+            {% if records %}
+            <table class="records-table">
+                <thead>
+                    <tr>
+                        <th>Semester</th>
+                        <th>Subject</th>
+                        <th>Marks</th>
+                        <th>Grade</th>
+                        <th>Attendance</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for record in records %}
+                    <tr>
+                        <td>{{ record.semester }}</td>
+                        <td>{{ record.subject }}</td>
+                        <td>{{ record.marks_obtained }} / {{ record.total_marks }}</td>
+                        <td>{{ record.grade }}</td>
+                        <td>{{ record.attendance_percentage }}%</td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+            {% else %}
+            <p class="empty-state">No records added</p>
+            {% endif %}
+        </div>
+    </div>
+</div>
+{% endblock %}

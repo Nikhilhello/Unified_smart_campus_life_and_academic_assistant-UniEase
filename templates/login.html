@@ -1,0 +1,35 @@
+{% extends 'base.html' %}
+
+{% block title %}Login - UniEase{% endblock %}
+
+{% block content %}
+<div class="auth-container">
+    <div class="auth-card">
+        <h2>
+            {% if request.GET.role == 'student' %}
+            Student Login
+            {% elif request.GET.role == 'staff' %}
+            Staff Login
+            {% else %}
+            Login to UniEase
+            {% endif %}
+        </h2>
+        <form method="POST" class="auth-form">
+            {% csrf_token %}
+            <input type="hidden" name="expected_role" value="{{ request.GET.role }}">
+            <div class="form-group">
+                <label for="username">Username</label>
+                <input type="text" id="username" name="username" required>
+            </div>
+            <div class="form-group">
+                <label for="password">Password</label>
+                <input type="password" id="password" name="password" required>
+            </div>
+            <button type="submit" class="btn btn-primary btn-block">Login</button>
+        </form>
+        <p class="auth-footer">
+            Don't have an account? <a href="{% url 'register' %}">Register here</a>
+        </p>
+    </div>
+</div>
+{% endblock %}

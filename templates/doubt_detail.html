@@ -1,0 +1,68 @@
+{% extends 'base.html' %}
+
+{% block title %}Doubt Detail - UniEase{% endblock %}
+
+{% block content %}
+<div class="page-container">
+    <div class="page-header">
+        <h1>Doubt Details</h1>
+        <a href="{% url 'doubts' %}" class="btn btn-secondary">Back to Doubts</a>
+    </div>
+
+    <div class="doubt-detail">
+        <div class="doubt-question-card">
+            <div class="doubt-meta">
+                <span class="badge">{{ doubt.subject }}</span>
+                <span class="badge badge-light">{{ doubt.topic }}</span>
+            </div>
+            <h2>{{ doubt.question }}</h2>
+            <div class="doubt-footer">
+                <small>
+                    {% if doubt.is_anonymous %}
+                    Posted anonymously
+                    {% else %}
+                    Posted by {{ doubt.posted_by.get_full_name }}
+                    {% endif %}
+                    | {{ doubt.created_at|timesince }} ago | {{ doubt.views }} views
+                </small>
+            </div>
+        </div>
+
+        <div class="answers-section">
+            <h3>Answers ({{ answers.count }})</h3>
+            {% if answers %}
+            {% for answer in answers %}
+            <div class="answer-card">
+                <div class="answer-content">
+                    <p>{{ answer.answer }}</p>
+                </div>
+                <div class="answer-footer">
+                    <div class="answer-meta">
+                        <small>Answered by {{ answer.answered_by.get_full_name }} | {{ answer.created_at|timesince }} ago</small>
+                    </div>
+                    <div class="answer-actions">
+                        <a href="{% url 'upvote_answer' answer.id %}" class="upvote-btn">
+                            ▲ {{ answer.upvotes }}
+                        </a>
+                    </div>
+                </div>
+            </div>
+            {% endfor %}
+            {% else %}
+            <p class="empty-state">No answers yet. Be the first to answer!</p>
+            {% endif %}
+
+            <div class="answer-form-section">
+                <h3>Your Answer</h3>
+                <form method="POST" action="{% url 'answer_doubt' doubt.id %}" class="standard-form">
+                    {% csrf_token %}
+                    <div class="form-group">
+                        <textarea name="answer" rows="6" placeholder="Write your answer here..." required></textarea>
+                    </div>
+                    <button type="submit" class="btn btn-primary">Post Answer</button>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

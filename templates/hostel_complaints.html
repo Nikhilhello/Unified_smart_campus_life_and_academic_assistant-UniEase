@@ -1,0 +1,49 @@
+{% extends 'base.html' %}
+
+{% block title %}Hostel Complaints - UniEase{% endblock %}
+
+{% block content %}
+<div class="page-container">
+    <div class="page-header">
+        <h1>Hostel Complaints</h1>
+        {% if user.profile.role == 'student' %}
+        <a href="{% url 'create_complaint' %}" class="btn btn-primary">File Complaint</a>
+        {% endif %}
+    </div>
+
+    <div class="complaints-list">
+        {% if complaints %}
+        {% for complaint in complaints %}
+        <div class="complaint-card">
+            <div class="complaint-header">
+                <h3>{{ complaint.title }}</h3>
+                <span class="badge badge-{{ complaint.status }}">{{ complaint.status|upper }}</span>
+            </div>
+            <p>{{ complaint.description }}</p>
+            <div class="complaint-details">
+                <p><strong>Category:</strong> {{ complaint.category }}</p>
+                <p><strong>Block:</strong> {{ complaint.hostel_block }}</p>
+                <p><strong>Room:</strong> {{ complaint.room_number }}</p>
+                {% if complaint.admin_response %}
+                <div class="admin-response">
+                    <strong>Admin Response:</strong>
+                    <p>{{ complaint.admin_response }}</p>
+                </div>
+                {% endif %}
+            </div>
+            <div class="complaint-footer">
+                <small>Filed {{ complaint.created_at|timesince }} ago</small>
+                {% if user.profile.role != 'student' and complaint.status != 'resolved' %}
+                <a href="{% url 'update_complaint' complaint.id %}" class="btn btn-small">Update Status</a>
+                {% endif %}
+            </div>
+        </div>
+        {% endfor %}
+        {% else %}
+        <div class="empty-state-large">
+            <p>No complaints filed</p>
+        </div>
+        {% endif %}
+    </div>
+</div>
+{% endblock %}

@@ -1,0 +1,100 @@
+{% extends 'base.html' %}
+
+{% block title %}Library Seats - UniEase{% endblock %}
+
+{% block content %}
+<div class="page-container">
+    <div class="page-header">
+        <h1>Library Seat Availability</h1>
+        <a href="{% url 'library' %}" class="btn btn-secondary">Back to Library</a>
+    </div>
+
+    <!-- Stats Overview -->
+    <div class="stats-grid" style="grid-template-columns: repeat(3, 1fr); margin-bottom: 2rem;">
+        <div class="stat-card">
+            <div class="stat-icon" style="background: rgba(16, 185, 129, 0.1); color: #10B981;">✅</div>
+            <div class="stat-content">
+                <h3>{{ available_seats }}</h3>
+                <p>Available Seats</p>
+            </div>
+        </div>
+        <div class="stat-card">
+            <div class="stat-icon" style="background: rgba(239, 68, 68, 0.1); color: #EF4444;">👥</div>
+            <div class="stat-content">
+                <h3>{{ occupied_seats }}</h3>
+                <p>Occupied</p>
+            </div>
+        </div>
+        <div class="stat-card">
+            <div class="stat-icon" style="background: rgba(79, 70, 229, 0.1); color: #4F46E5;">📊</div>
+            <div class="stat-content">
+                <h3>{{ occupancy_rate }}%</h3>
+                <p>Occupancy Rate</p>
+            </div>
+        </div>
+    </div>
+
+    <!-- Librarian Controls -->
+    {% if user_profile.role == 'librarian' %}
+    <div class="content-area" style="text-align: center; margin-bottom: 3rem;">
+        <h2>Live Occupancy Control</h2>
+        <p style="margin-bottom: 1.5rem; color: var(--text-muted);">Manage student entry and exit to update the live
+            counter.</p>
+
+        <div style="display: flex; gap: 2rem; justify-content: center;">
+            <form method="POST">
+                {% csrf_token %}
+                <input type="hidden" name="action" value="enter">
+                <button type="submit" class="btn btn-primary"
+                    style="padding: 1rem 3rem; font-size: 1.2rem; background: #10B981;">
+                    Student Entered (+1)
+                </button>
+            </form>
+
+            <form method="POST">
+                {% csrf_token %}
+                <input type="hidden" name="action" value="exit">
+                <button type="submit" class="btn btn-primary"
+                    style="padding: 1rem 3rem; font-size: 1.2rem; background: #EF4444;">
+                    Student Exited (-1)
+                </button>
+            </form>
+        </div>
+    </div>
+    {% endif %}
+
+    <!-- Detailed Seat Map -->
+    <h2 style="margin-bottom: 1.5rem;">Detailed Seat Map</h2>
+    <div class="seats-container">
+        {% if seats %}
+        {% regroup seats by floor as floor_list %}
+        {% for floor_group in floor_list %}
+        <div class="seats-section">
+            <h3 style="margin-bottom: 1rem;">Floor {{ floor_group.grouper }}</h3>
+            <div class="seats-grid">
+                {% for seat in floor_group.list %}
+                <div class="seat {% if not seat.is_available %}occupied{% else %}available{% endif %}"
+                    style="display: flex; flex-direction: column; align-items: center; justify-content: center; padding: 1rem; background: white; border-radius: 8px; box-shadow: 0 1px 3px rgba(0,0,0,0.1);">
+                    <div class="seat-number" style="font-weight: bold; font-size: 1.1rem; margin-bottom: 0.5rem;">
+                        {{ seat.seat_number }}
+                    </div>
+                    <div class="seat-status">
+                        {% if not seat.is_available %}
+                        <span class="badge badge-danger">Occupied</span>
+                        {% else %}
+                        <span class="badge badge-success">Available</span>
+                        {% endif %}
+                    </div>
+                </div>
+                {% endfor %}
+            </div>
+        </div>
+        {% endfor %}
+        {% else %}
+        <div class="empty-state-large">
+            <p>No seat information available</p>
+        </div>
+        {% endif %}
+    </div>
+</div>
+{% endblock %}

@@ -1,0 +1,256 @@
+{% extends 'base.html' %}
+
+{% block title %}Staff Dashboard - UniEase{% endblock %}
+
+{% block content %}
+<div class="dashboard-container">
+    <div class="dashboard-header header-faculty">
+        <h1>Welcome, {{ user.first_name }}!</h1>
+        <p class="user-info">
+            <span class="role-tag">{{ user_profile.get_role_display }}</span>
+            {% if user_profile.department %}<span class="separator">•</span> {{ user_profile.department }}{% endif %}
+            <span class="separator">•</span> <a href="{% url 'edit_profile' %}" class="edit-profile-link">Edit
+                Profile</a>
+        </p>
+    </div>
+
+    {% if user_profile.role == 'admin' %}
+    <div class="admin-notice-banner"
+        style="background: #e3f2fd; padding:15px; border-radius: 8px; margin-top: 15px; border: 1px solid #2196f3;">
+        <strong>Admin Action Required:</strong> There may be pending user approvals.
+        <a href="{% url 'pending_approvals' %}" class="btn btn-sm btn-primary">Go to Approvals Dashboard</a>
+    </div>
+    {% endif %}
+
+    <!-- Stats Grid -->
+    <div class="stats-grid">
+        <!-- Faculty Stats -->
+        {% if user_profile.role == 'faculty' %}
+        <div class="stat-card">
+            <div class="stat-icon">📖</div>
+            <div class="stat-content">
+                <h3>{{ pending_syllabus.count }}</h3>
+                <p>Pending Topics</p>
+            </div>
+        </div>
+        <div class="stat-card">
+            <div class="stat-icon">❓</div>
+            <div class="stat-content">
+                <h3>{{ unanswered_doubts }}</h3>
+                <p>Unanswered Doubts</p>
+            </div>
+        </div>
+
+        <!-- Warden Stats -->
+        {% elif user_profile.role == 'warden' %}
+        <div class="stat-card">
+            <div class="stat-icon">🏘️</div>
+            <div class="stat-content">
+                <h3>{{ open_complaints.count }}</h3>
+                <p>Open Issues</p>
+            </div>
+        </div>
+        <div class="stat-card">
+            <div class="stat-icon">✅</div>
+            <div class="stat-content">
+                <h3>{{ resolved_complaints }}</h3>
+                <p>Resolved</p>
+            </div>
+        </div>
+
+        <!-- Mess Head Stats -->
+        {% elif user_profile.role == 'mess_head' %}
+        <div class="stat-card">
+            <div class="stat-icon">🍛</div>
+            <div class="stat-content">
+                <h3>{{ mess_complaints.count }}</h3>
+                <p>Open Complaints</p>
+            </div>
+        </div>
+        <div class="stat-card">
+            <div class="stat-icon">⭐</div>
+            <div class="stat-content">
+                <h3>{{ average_rating|default:"--" }}</h3>
+                <p>Avg Rating</p>
+            </div>
+        </div>
+
+        <!-- Librarian Stats -->
+        {% elif user_profile.role == 'librarian' %}
+        <div class="stat-card">
+            <div class="stat-icon">⚠️</div>
+            <div class="stat-content">
+                <h3>{{ overdue_books.count }}</h3>
+                <p>Overdue Books</p>
+            </div>
+        </div>
+        <div class="stat-card">
+            <div class="stat-icon">📊</div>
+            <div class="stat-content">
+                <h3>{{ books_borrowed_today }}</h3>
+                <p>Borrowed Today</p>
+            </div>
+        </div>
+
+        <!-- Placement Officer Stats -->
+        {% elif user_profile.role == 'placement_officer' %}
+        <div class="stat-card">
+            <div class="stat-icon">📄</div>
+            <div class="stat-content">
+                <h3>{{ recent_applications.count }}</h3>
+                <p>New Applications</p>
+            </div>
+        </div>
+        <div class="stat-card">
+            <div class="stat-icon">🏢</div>
+            <div class="stat-content">
+                <h3>{{ active_placements }}</h3>
+                <p>Active Drives</p>
+            </div>
+        </div>
+        {% endif %}
+
+        <!-- Common Stats -->
+        <div class="stat-card">
+            <div class="stat-icon">🔔</div>
+            <div class="stat-content">
+                <h3>{{ notifications.count }}</h3>
+                <p>Notifications</p>
+            </div>
+        </div>
+    </div>
+
+    <!-- Main Content -->
+    <div class="dashboard-sections">
+
+        <!-- Faculty Content -->
+        {% if user_profile.role == 'faculty' %}
+        <div class="section-card">
+            <h2>My Classes Today</h2>
+            {% if my_classes %}
+            <ul class="item-list">
+                {% for class in my_classes %}
+                <li>
+                    <strong>{{ class.time_slot }}</strong>: {{ class.subject }} ({{ class.room }})
+                </li>
+                {% endfor %}
+            </ul>
+            {% else %}
+            <p class="empty-state">No classes today.</p>
+            {% endif %}
+            <a href="{% url 'timetable' %}" class="btn btn-link">View Timetable →</a>
+        </div>
+        {% endif %}
+
+        <!-- Warden Content -->
+        {% if user_profile.role == 'warden' %}
+        <div class="section-card">
+            <div class="card-header-flex">
+                <h2>Hostel Issues</h2>
+                <a href="{% url 'hostel_complaints' %}" class="btn btn-sm">View All</a>
+            </div>
+            {% if open_complaints %}
+            <ul class="item-list">
+                {% for complaint in open_complaints %}
+                <li>
+                    <div class="item-header">
+                        <strong>{{ complaint.title }}</strong>
+                        <span class="badge badge-{{ complaint.status }}">{{ complaint.status }}</span>
+                    </div>
+                    <p class="item-meta">Room {{ complaint.room_number }} • {{ complaint.category }}</p>
+                    <a href="{% url 'update_complaint' complaint.id %}" class="btn-xs">Resolve</a>
+                </li>
+                {% endfor %}
+            </ul>
+            {% else %}
+            <p class="empty-state">No open complaints.</p>
+            {% endif %}
+        </div>
+        {% endif %}
+
+        <!-- Mess Head Content -->
+        {% if user_profile.role == 'mess_head' %}
+        <div class="section-card">
+            <div class="card-header-flex">
+                <h2>Mess Complaints</h2>
+                <a href="{% url 'hostel_complaints' %}" class="btn btn-sm">View All</a>
+            </div>
+            {% if mess_complaints %}
+            <ul class="item-list">
+                {% for complaint in mess_complaints %}
+                <li>
+                    <div class="item-header">
+                        <strong>{{ complaint.title }}</strong>
+                        <span class="badge badge-{{ complaint.status }}">{{ complaint.status }}</span>
+                    </div>
+                    <p class="item-meta">{{ complaint.created_at|date:"M d" }} • {{ complaint.posted_by.first_name }}
+                    </p>
+                    <a href="{% url 'update_complaint' complaint.id %}" class="btn-xs">Update</a>
+                </li>
+                {% endfor %}
+            </ul>
+            {% else %}
+            <p class="empty-state">No complaints! 🎉</p>
+            {% endif %}
+        </div>
+        {% endif %}
+
+        <!-- Common: Announcements -->
+        <div class="section-card">
+            <div class="card-header-flex">
+                <h2>Recent Announcements</h2>
+                <a href="{% url 'announcements' %}" class="btn btn-sm">View All</a>
+            </div>
+            {% if announcements %}
+            <ul class="item-list">
+                {% for announcement in announcements %}
+                <li>
+                    <div class="item-header">
+                        <strong>{{ announcement.title }}</strong>
+                        <span class="badge badge-{{ announcement.priority }}">{{ announcement.priority }}</span>
+                    </div>
+                    <p class="item-excerpt">{{ announcement.content|truncatewords:15 }}</p>
+                </li>
+                {% endfor %}
+            </ul>
+            {% else %}
+            <p class="empty-state">No new announcements</p>
+            {% endif %}
+        </div>
+    </div>
+
+    <!-- Quick Actions -->
+    <div class="quick-actions">
+        <h2>Quick Actions</h2>
+        <div class="action-buttons">
+            {% if user_profile.role == 'faculty' %}
+            <a href="{% url 'create_exam' %}" class="action-btn"><span class="action-icon">📝</span> Create Exam</a>
+            <a href="{% url 'upload_note' %}" class="action-btn"><span class="action-icon">📤</span> Upload Note</a>
+            <a href="{% url 'create_announcement' %}" class="action-btn"><span class="action-icon">📢</span>
+                Announce</a>
+
+            {% elif user_profile.role == 'mess_head' %}
+            <a href="{% url 'mess' %}" class="action-btn"><span class="action-icon">🍱</span> Update Menu</a>
+
+            {% elif user_profile.role == 'librarian' %}
+            <a href="{% url 'library' %}" class="action-btn"><span class="action-icon">📖</span> Manage Books</a>
+
+            {% elif user_profile.role == 'placement_officer' %}
+            <a href="{% url 'create_placement' %}" class="action-btn"><span class="action-icon">💼</span> Post Job</a>
+            {% endif %}
+
+            <!-- Admin Actions -->
+            {% if user_profile.role == 'admin' %}
+            <a href="{% url 'pending_approvals' %}" class="action-btn">
+                <span class="action-icon">⚖️</span> Manage Approvals
+            </a>
+            <a href="{% url 'create_announcement' %}" class="action-btn"><span class="action-icon">📢</span>
+                Announce</a>
+            <a href="{% url 'create_timetable' %}" class="action-btn"><span class="action-icon">📅</span> Timetable</a>
+            {% endif %}
+
+            <a href="{% url 'notifications' %}" class="action-btn"><span class="action-icon">🔔</span> Notifications</a>
+        </div>
+    </div>
+</div>
+{% endblock %}

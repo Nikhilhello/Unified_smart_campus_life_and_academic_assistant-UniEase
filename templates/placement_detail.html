@@ -1,0 +1,52 @@
+{% extends 'base.html' %}
+
+{% block title %}{{ placement.job_title }} - UniEase{% endblock %}
+
+{% block content %}
+<div class="page-container">
+    <div class="page-header">
+        <h1>{{ placement.job_title }}</h1>
+        <a href="{% url 'placements' %}" class="btn btn-secondary">Back</a>
+    </div>
+
+    <div class="placement-detail">
+        <div class="detail-header">
+            <h2>{{ placement.company_name }}</h2>
+            <span class="badge badge-{{ placement.job_type }}">{{ placement.job_type|upper }}</span>
+        </div>
+
+        <div class="detail-section">
+            <h3>Description</h3>
+            <p>{{ placement.description }}</p>
+        </div>
+
+        <div class="detail-section">
+            <h3>Eligibility</h3>
+            <p>{{ placement.eligibility }}</p>
+        </div>
+
+        <div class="detail-section">
+            <h3>Required Skills</h3>
+            <p>{{ placement.required_skills }}</p>
+        </div>
+
+        <div class="detail-info">
+            <p><strong>Package:</strong> {{ placement.package }}</p>
+            <p><strong>Application Deadline:</strong> {{ placement.application_deadline }}</p>
+            {% if placement.interview_date %}
+            <p><strong>Interview Date:</strong> {{ placement.interview_date }}</p>
+            {% endif %}
+        </div>
+
+        {% if not has_applied %}
+        <div class="apply-section">
+            <a href="{% url 'apply_placement' placement.id %}" class="btn btn-primary btn-large">Apply Now</a>
+        </div>
+        {% else %}
+        <div class="applied-message">
+            <span class="badge badge-success">You have already applied for this position</span>
+        </div>
+        {% endif %}
+    </div>
+</div>
+{% endblock %}

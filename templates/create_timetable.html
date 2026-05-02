@@ -1,0 +1,73 @@
+{% extends 'base.html' %}
+
+{% block title %}Create Timetable - UniEase{% endblock %}
+
+{% block content %}
+<div class="page-container">
+    <div class="page-header">
+        <h1>Create Timetable Entry</h1>
+    </div>
+
+    <div class="form-container">
+        <form method="POST" class="standard-form">
+            {% csrf_token %}
+            <div class="form-row">
+                <div class="form-group">
+                    <label for="department">Department</label>
+                    <input type="text" id="department" name="department" placeholder="e.g., Computer Science" required>
+                </div>
+                <div class="form-group">
+                    <label for="year">Year</label>
+                    <input type="number" id="year" name="year" min="1" max="4" required>
+                </div>
+            </div>
+            
+            <div class="form-row">
+                <div class="form-group">
+                    <label for="semester">Semester</label>
+                    <input type="number" id="semester" name="semester" min="1" max="8" required>
+                </div>
+                <div class="form-group">
+                    <label for="day">Day</label>
+                    <select id="day" name="day" required>
+                        <option value="Monday">Monday</option>
+                        <option value="Tuesday">Tuesday</option>
+                        <option value="Wednesday">Wednesday</option>
+                        <option value="Thursday">Thursday</option>
+                        <option value="Friday">Friday</option>
+                        <option value="Saturday">Saturday</option>
+                        <option value="Sunday">Sunday</option>
+                    </select>
+                </div>
+            </div>
+
+            <div class="form-row">
+                <div class="form-group">
+                    <label for="time_slot">Time Slot</label>
+                    <input type="text" id="time_slot" name="time_slot" placeholder="e.g., 09:00 AM - 10:00 AM" required>
+                </div>
+                <div class="form-group">
+                    <label for="subject">Subject</label>
+                    <input type="text" id="subject" name="subject" required>
+                </div>
+            </div>
+
+            <div class="form-row">
+                <div class="form-group">
+                    <label for="faculty">Faculty</label>
+                    <input type="text" id="faculty" name="faculty" required>
+                </div>
+                <div class="form-group">
+                    <label for="room">Room</label>
+                    <input type="text" id="room" name="room" required>
+                </div>
+            </div>
+
+            <div class="form-actions">
+                <button type="submit" class="btn btn-primary">Create Entry</button>
+                <a href="{% url 'timetable' %}" class="btn btn-secondary">Cancel</a>
+            </div>
+        </form>
+    </div>
+</div>
+{% endblock %}

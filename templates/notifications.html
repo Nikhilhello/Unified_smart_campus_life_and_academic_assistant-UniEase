@@ -1,0 +1,37 @@
+{% extends 'base.html' %}
+
+{% block title %}Notifications - UniEase{% endblock %}
+
+{% block content %}
+<div class="page-container">
+    <div class="page-header">
+        <h1>Notifications</h1>
+    </div>
+
+    <div class="notifications-list">
+        {% if notifications %}
+        {% for notification in notifications %}
+        <div class="notification-card {% if notification.is_read %}read{% else %}unread{% endif %}">
+            <div class="notification-header">
+                <h3>{{ notification.title }}</h3>
+                {% if not notification.is_read %}
+                <span class="badge badge-primary">New</span>
+                {% endif %}
+            </div>
+            <p>{{ notification.message }}</p>
+            <div class="notification-footer">
+                <small>{{ notification.created_at|timesince }} ago</small>
+                {% if not notification.is_read %}
+                <a href="{% url 'mark_notification_read' notification.id %}" class="btn btn-small">Mark as Read</a>
+                {% endif %}
+            </div>
+        </div>
+        {% endfor %}
+        {% else %}
+        <div class="empty-state-large">
+            <p>No notifications</p>
+        </div>
+        {% endif %}
+    </div>
+</div>
+{% endblock %}

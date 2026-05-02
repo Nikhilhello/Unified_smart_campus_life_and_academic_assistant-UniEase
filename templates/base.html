@@ -1,0 +1,122 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{% block title %}UniEase - Campus Management System{% endblock %}</title>
+    <link rel="stylesheet" href="{% static 'css/style.css' %}">
+</head>
+
+<body>
+    {% if user.is_authenticated %}
+    <nav class="navbar">
+        <div class="nav-container">
+            <div class="nav-brand">
+                <a href="{% url 'dashboard' %}">🎓 UniEase</a>
+            </div>
+            <div class="nav-links">
+                <ul class="nav-menu">
+                    <li><a href="{% url 'dashboard' %}">Dashboard</a></li>
+                    <li class="dropdown">
+                        <a href="#" class="dropbtn">Academics ▾</a>
+                        <div class="dropdown-content">
+                            <a href="{% url 'announcements' %}">Announcements</a>
+                            <a href="{% url 'notes' %}">Notes</a>
+                            <a href="{% url 'timetable' %}">Timetable</a>
+                            <a href="{% url 'syllabus' %}">Syllabus</a>
+                            <a href="{% url 'exams' %}">Exams</a>
+                            <a href="{% url 'doubts' %}">Doubts</a>
+                        </div>
+                    </li>
+                    <li class="dropdown">
+                        <a href="#" class="dropbtn">Campus Life ▾</a>
+                        <div class="dropdown-content">
+                            <a href="{% url 'lost_found' %}">Lost & Found</a>
+                            <a href="{% url 'hostel_complaints' %}">Hostel Complaints</a>
+                            <a href="{% url 'transport' %}">Transport</a>
+                            <a href="{% url 'mess' %}">Mess</a>
+                        </div>
+                    </li>
+                    <li><a href="{% url 'library' %}">Library</a></li>
+                    <li><a href="{% url 'placements' %}">Placements</a></li>
+                    {% if user.profile.role == 'admin' %}
+                    <li class="dropdown">
+                        <a href="#" class="dropbtn">Admin ▾</a>
+                        <div class="dropdown-content">
+                            <a href="{% url 'pending_approvals' %}">Pending Approvals</a>
+                            <a href="{% url 'create_announcement' %}">Create Announcement</a>
+                            <a href="{% url 'create_placement' %}">Create Placement</a>
+                            <a href="{% url 'hostel_complaints' %}">Manage Complaints</a>
+                            <a href="{% url 'create_exam' %}">Create Exam</a>
+                        </div>
+                    </li>
+                    {% endif %}
+                </ul>
+            </div>
+
+            <div class="nav-right">
+                <div class="nav-profile-dropdown" id="profileDropdown">
+                    <button class="nav-profile-trigger" id="profileBtn">
+                        <span class="avatar-initials">
+                            {% if user.first_name and user.last_name %}
+                            {{ user.first_name|first }}{{ user.last_name|first }}
+                            {% else %}
+                            {{ user.username|slice:":2" }}
+                            {% endif %}
+                        </span>
+                    </button>
+
+                    <div class="nav-dropdown-menu">
+                        <div class="dropdown-user-info">
+                            <span class="dropdown-name">{{ user.get_full_name|default:user.username }}</span>
+                            <span class="dropdown-role">{{ user.profile.get_role_display }}</span>
+                        </div>
+                        <div class="dropdown-divider"></div>
+                        <a href="{% url 'edit_profile' %}" class="dropdown-item">
+                            <span class="item-icon">👤</span> Edit Profile
+                        </a>
+                        <a href="{% url 'notifications' %}" class="dropdown-item">
+                            <span class="item-icon">🔔</span> Notifications
+                            {% if unread_notifications_count > 0 %}
+                            <span class="notif-badge">{{ unread_notifications_count }}</span>
+                            {% endif %}
+                        </a>
+                        <a href="{% url 'academic_vault' %}" class="dropdown-item">
+                            <span class="item-icon">🔐</span> My Vault
+                        </a>
+                        <div class="dropdown-divider"></div>
+                        <a href="{% url 'logout' %}" class="dropdown-item logout-item">
+                            <span class="item-icon">🚪</span> Logout
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </nav>
+    {% endif %}
+
+    <main class="main-content">
+        {% if messages %}
+        <div class="messages-container">
+            {% for message in messages %}
+            <div class="alert alert-{{ message.tags }}">
+                {{ message }}
+            </div>
+            {% endfor %}
+        </div>
+        {% endif %}
+
+        {% block content %}{% endblock %}
+    </main>
+
+    <footer class="footer">
+        <p>&copy; 2025 UniEase - Unified Smart Campus Life & Academic Assistant</p>
+    </footer>
+
+    <script src="/static/js/script.js"></script>
+    {% block extra_js %}{% endblock %}
+</body>
+
+</html>

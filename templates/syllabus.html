@@ -1,0 +1,43 @@
+{% extends 'base.html' %}
+
+{% block title %}Syllabus - UniEase{% endblock %}
+
+{% block content %}
+<div class="page-container">
+    <div class="page-header">
+        <h1>Syllabus Progress</h1>
+    </div>
+
+    <div class="syllabus-container">
+        {% if syllabus %}
+        {% regroup syllabus by subject as subject_list %}
+        {% for subject_group in subject_list %}
+        <div class="syllabus-subject">
+            <h2>{{ subject_group.grouper }}</h2>
+            <ul class="syllabus-list">
+                {% for topic in subject_group.list %}
+                <li class="syllabus-item {% if topic.completed %}completed{% endif %}">
+                    <div class="topic-info">
+                        <span class="topic-name">{{ topic.topic }}</span>
+                        {% if topic.completed %}
+                        <span class="badge badge-success">✓ Completed</span>
+                        {% else %}
+                        <span class="badge badge-warning">Pending</span>
+                        {% endif %}
+                    </div>
+                    {% if user.profile.role == 'faculty' %}
+                    <a href="{% url 'update_syllabus' topic.id %}" class="btn btn-small">Toggle Status</a>
+                    {% endif %}
+                </li>
+                {% endfor %}
+            </ul>
+        </div>
+        {% endfor %}
+        {% else %}
+        <div class="empty-state-large">
+            <p>No syllabus available</p>
+        </div>
+        {% endif %}
+    </div>
+</div>
+{% endblock %}

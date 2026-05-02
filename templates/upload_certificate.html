@@ -1,0 +1,41 @@
+{% extends 'base.html' %}
+
+{% block title %}Upload Certificate - UniEase{% endblock %}
+
+{% block content %}
+<div class="page-container">
+    <div class="page-header">
+        <h1>Upload Certificate</h1>
+    </div>
+
+    <div class="form-container">
+        <form method="POST" enctype="multipart/form-data" class="standard-form">
+            {% csrf_token %}
+            <div class="form-group">
+                <label for="title">Certificate Title</label>
+                <input type="text" id="title" name="title" required>
+            </div>
+            <div class="form-group">
+                <label for="issuer">Issuing Organization</label>
+                <input type="text" id="issuer" name="issuer" required>
+            </div>
+            <div class="form-group">
+                <label for="issue_date">Issue Date</label>
+                <input type="date" id="issue_date" name="issue_date" required>
+            </div>
+            <div class="form-group">
+                <label for="category">Category</label>
+                <input type="text" id="category" name="category" placeholder="e.g., Technical, Soft Skills, Sports" required>
+            </div>
+            <div class="form-group">
+                <label for="certificate_file">Certificate File (PDF)</label>
+                <input type="file" id="certificate_file" name="certificate_file" accept=".pdf" required>
+            </div>
+            <div class="form-actions">
+                <button type="submit" class="btn btn-primary">Upload Certificate</button>
+                <a href="{% url 'academic_vault' %}" class="btn btn-secondary">Cancel</a>
+            </div>
+        </form>
+    </div>
+</div>
+{% endblock %}

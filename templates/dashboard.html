@@ -1,0 +1,347 @@
+{% extends 'base.html' %}
+
+{% block title %}Dashboard - UniEase{% endblock %}
+
+{% block content %}
+<div class="dashboard-container">
+    <div class="dashboard-header">
+        <h1>Welcome, {{ user.first_name }}!</h1>
+        {# Use get_role_display to access the human-readable name #}
+        <p class="user-info">{{ user_profile.get_role_display }} | {{ user_profile.department }}</p>
+    </div>
+
+    <!-- Statistics Grid -->
+    <div class="stats-grid">
+        {% if user_profile.role == 'student' %}
+        <div class="stat-card">
+            <div class="stat-icon">📝</div>
+            <div class="stat-content">
+                <h3>{{ upcoming_exams.count }}</h3>
+                <p>Upcoming Exams</p>
+            </div>
+        </div>
+        <div class="stat-card">
+            <div class="stat-icon">📚</div>
+            <div class="stat-content">
+                <h3>{{ borrowed_books }}</h3>
+                <p>Borrowed Books</p>
+            </div>
+        </div>
+        <div class="stat-card">
+            <div class="stat-icon">🏠</div>
+            <div class="stat-content">
+                <h3>{{ pending_complaints }}</h3>
+                <p>Open Complaints</p>
+            </div>
+        </div>
+
+        {% elif user_profile.role == 'mess_head' %}
+        <div class="stat-card">
+            <div class="stat-icon">🍛</div>
+            <div class="stat-content">
+                <h3>{{ mess_complaints.count }}</h3>
+                <p>Open Complaints</p>
+            </div>
+        </div>
+        <div class="stat-card">
+            <div class="stat-icon">⭐</div>
+            <div class="stat-content">
+                <h3>{{ average_rating|default:"--" }}</h3>
+                <p>Average Rating</p>
+            </div>
+        </div>
+
+        {% elif user_profile.role == 'warden' %}
+        <div class="stat-card">
+            <div class="stat-icon">🏘️</div>
+            <div class="stat-content">
+                <h3>{{ open_complaints.count }}</h3>
+                <p>Open Issues</p>
+            </div>
+        </div>
+        <div class="stat-card">
+            <div class="stat-icon">✅</div>
+            <div class="stat-content">
+                <h3>{{ resolved_complaints }}</h3>
+                <p>Resolved</p>
+            </div>
+        </div>
+
+        {% elif user_profile.role == 'faculty' %}
+        <div class="stat-card">
+            <div class="stat-icon">📖</div>
+            <div class="stat-content">
+                <h3>{{ pending_syllabus.count }}</h3>
+                <p>Pending Topics</p>
+            </div>
+        </div>
+        <div class="stat-card">
+            <div class="stat-icon">❓</div>
+            <div class="stat-content">
+                <h3>{{ unanswered_doubts }}</h3>
+                <p>Unanswered Doubts</p>
+            </div>
+        </div>
+
+        {% elif user_profile.role == 'librarian' %}
+        <div class="stat-card">
+            <div class="stat-icon">⚠️</div>
+            <div class="stat-content">
+                <h3>{{ overdue_books.count }}</h3>
+                <p>Overdue Books</p>
+            </div>
+        </div>
+        <div class="stat-card">
+            <div class="stat-icon">📊</div>
+            <div class="stat-content">
+                <h3>{{ books_borrowed_today }}</h3>
+                <p>Borrowed Today</p>
+            </div>
+        </div>
+
+        {% elif user_profile.role == 'placement_officer' %}
+        <div class="stat-card">
+            <div class="stat-icon">📄</div>
+            <div class="stat-content">
+                <h3>{{ recent_applications.count }}</h3>
+                <p>New Applications</p>
+            </div>
+        </div>
+        <div class="stat-card">
+            <div class="stat-icon">🏢</div>
+            <div class="stat-content">
+                <h3>{{ active_placements }}</h3>
+                <p>Active Drives</p>
+            </div>
+        </div>
+        {% endif %}
+
+        <!-- Common Stat -->
+        <div class="stat-card">
+            <div class="stat-icon">🔔</div>
+            <div class="stat-content">
+                <h3>{{ notifications.count }}</h3>
+                <p>Notifications</p>
+            </div>
+        </div>
+    </div>
+
+    <!-- Main Content Sections -->
+    <div class="dashboard-sections">
+
+        <!-- Role Specific Sections -->
+        {% if user_profile.role == 'mess_head' %}
+        <div class="section-card">
+            <div class="card-header-flex">
+                <h2>Mess Complaints</h2>
+                <a href="{% url 'hostel_complaints' %}" class="btn btn-sm">View All</a>
+            </div>
+            {% if mess_complaints %}
+            <ul class="item-list">
+                {% for complaint in mess_complaints %}
+                <li>
+                    <div class="item-header">
+                        <strong>{{ complaint.title }}</strong>
+                        <span class="badge badge-{{ complaint.status }}">{{ complaint.status }}</span>
+                    </div>
+                    <p class="item-meta">{{ complaint.created_at|date:"M d, Y" }} by {{ complaint.posted_by.first_name
+                        }}</p>
+                    <a href="{% url 'update_complaint' complaint.id %}" class="btn-xs">Update Status</a>
+                </li>
+                {% endfor %}
+            </ul>
+            {% else %}
+            <p class="empty-state">No open mess complaints! 🎉</p>
+            {% endif %}
+        </div>
+
+        <div class="section-card">
+            <h2>Today's Menu</h2>
+            {% if todays_menu %}
+            {% for menu in todays_menu %}
+            <div class="menu-item">
+                <strong>{{ menu.meal_type|title }}</strong>: {{ menu.items }}
+            </div>
+            {% endfor %}
+            {% else %}
+            <p class="empty-state">No menu set for today.</p>
+            {% endif %}
+            <a href="{% url 'mess' %}" class="btn btn-link">Manage Menu →</a>
+        </div>
+
+        {% elif user_profile.role == 'warden' %}
+        <div class="section-card">
+            <div class="card-header-flex">
+                <h2>Hostel Issues</h2>
+                <a href="{% url 'hostel_complaints' %}" class="btn btn-sm">View All</a>
+            </div>
+            {% if open_complaints %}
+            <ul class="item-list">
+                {% for complaint in open_complaints %}
+                <li>
+                    <div class="item-header">
+                        <strong>{{ complaint.title }}</strong>
+                        <span class="badge badge-{{ complaint.status }}">{{ complaint.status }}</span>
+                    </div>
+                    <p class="item-meta">Room {{ complaint.room_number }} • {{ complaint.category }}</p>
+                    <a href="{% url 'update_complaint' complaint.id %}" class="btn-xs">Resolve</a>
+                </li>
+                {% endfor %}
+            </ul>
+            {% else %}
+            <p class="empty-state">No open complaints.</p>
+            {% endif %}
+        </div>
+
+        {% elif user_profile.role == 'faculty' %}
+        <div class="section-card">
+            <h2>My Classes Today</h2>
+            {% if my_classes %}
+            <ul class="item-list">
+                {% for class in my_classes %}
+                <li>
+                    <strong>{{ class.time_slot }}</strong>: {{ class.subject }} ({{ class.room }})
+                </li>
+                {% endfor %}
+            </ul>
+            {% else %}
+            <p class="empty-state">No classes today.</p>
+            {% endif %}
+            <a href="{% url 'timetable' %}" class="btn btn-link">View Timetable →</a>
+        </div>
+
+        {% elif user_profile.role == 'librarian' %}
+        <div class="section-card">
+            <h2>Overdue Books</h2>
+            {% if overdue_books %}
+            <ul class="item-list">
+                {% for record in overdue_books %}
+                <li>
+                    <div class="item-header">
+                        <strong>{{ record.book.title }}</strong>
+                        <span class="badge badge-danger">Overdue</span>
+                    </div>
+                    <p class="item-meta">Borrowed by: {{ record.user.get_full_name }}</p>
+                </li>
+                {% endfor %}
+            </ul>
+            <a href="{% url 'library' %}" class="btn btn-link">Manage Library →</a>
+            {% else %}
+            <p class="empty-state">No overdue books.</p>
+            {% endif %}
+        </div>
+
+        {% elif user_profile.role == 'placement_officer' %}
+        <div class="section-card">
+            <h2>Recent Applications</h2>
+            {% if recent_applications %}
+            <ul class="item-list">
+                {% for app in recent_applications %}
+                <li>
+                    <div class="item-header">
+                        <strong>{{ app.user.get_full_name }}</strong>
+                        <span class="badge badge-{{ app.status }}">{{ app.status }}</span>
+                    </div>
+                    <p class="item-meta">Role: {{ app.placement.job_role }}</p>
+                </li>
+                {% endfor %}
+            </ul>
+            <a href="{% url 'placements' %}" class="btn btn-link">Manage Applications →</a>
+            {% else %}
+            <p class="empty-state">No recent applications.</p>
+            {% endif %}
+        </div>
+
+        {% else %}
+        <!-- Student & Default View -->
+        <div class="section-card">
+            <h2>Upcoming Exams</h2>
+            {% if upcoming_exams %}
+            <ul class="item-list">
+                {% for exam in upcoming_exams %}
+                <li>
+                    <strong>{{ exam.subject }}</strong> - {{ exam.exam_name }}
+                    <br>
+                    <small>{{ exam.date }} at {{ exam.time }} (Hall: {{ exam.hall }})</small>
+                </li>
+                {% endfor %}
+            </ul>
+            <a href="{% url 'exams' %}" class="btn btn-link">View All →</a>
+            {% else %}
+            <p class="empty-state">No upcoming exams</p>
+            {% endif %}
+        </div>
+        {% endif %}
+
+        <!-- Announcements Section (Common to all) -->
+        <div class="section-card">
+            <h2>Recent Announcements</h2>
+            {% if announcements %}
+            <ul class="item-list">
+                {% for announcement in announcements %}
+                <li>
+                    <div class="item-header">
+                        <strong>{{ announcement.title }}</strong>
+                        <span class="badge badge-{{ announcement.priority }}">{{ announcement.priority }}</span>
+                    </div>
+                    <p class="item-excerpt">{{ announcement.content|truncatewords:15 }}</p>
+                </li>
+                {% endfor %}
+            </ul>
+            <a href="{% url 'announcements' %}" class="btn btn-link">View All →</a>
+            {% else %}
+            <p class="empty-state">No new announcements</p>
+            {% endif %}
+        </div>
+    </div>
+
+    <!-- Quick Actions -->
+    <div class="quick-actions">
+        <h2>Quick Actions</h2>
+        <div class="action-buttons">
+            {% if user_profile.role == 'admin' %}
+            <a href="{% url 'pending_approvals' %}" class="action-btn">
+                <span class="action-icon">⚖️</span> Manage Approvals
+            </a>
+            {% endif %}
+            {% if user_profile.role == 'mess_head' %}
+            <a href="{% url 'mess' %}" class="action-btn">
+                <span class="action-icon">🍱</span> Manage Menu
+            </a>
+            {% elif user_profile.role == 'faculty' %}
+            <a href="{% url 'create_exam' %}" class="action-btn">
+                <span class="action-icon">📝</span> Create Exam
+            </a>
+            <a href="{% url 'upload_note' %}" class="action-btn">
+                <span class="action-icon">📤</span> Upload Note
+            </a>
+            {% elif user_profile.role == 'student' %}
+            <a href="{% url 'create_complaint' %}" class="action-btn">
+                <span class="action-icon">📢</span> File Complaint
+            </a>
+            <a href="{% url 'ask_doubt' %}" class="action-btn">
+                <span class="action-icon">❓</span> Ask Doubt
+            </a>
+            {% elif user_profile.role == 'librarian' %}
+            <a href="{% url 'library' %}" class="action-btn">
+                <span class="action-icon">📖</span> Manage Books
+            </a>
+            {% elif user_profile.role == 'placement_officer' %}
+            <a href="{% url 'create_placement' %}" class="action-btn">
+                <span class="action-icon">💼</span> Add Placement
+            </a>
+            {% endif %}
+
+            <a href="{% url 'notifications' %}" class="action-btn">
+                <span class="action-icon">🔔</span> Notifications
+            </a>
+
+            {% if user_profile.role != 'librarian' %}
+            <a href="{% url 'library' %}" class="action-btn">
+                <span class="action-icon">📖</span> Library
+            </a>
+            {% endif %}
+        </div>
+    </div>
+</div>
+{% endblock %}

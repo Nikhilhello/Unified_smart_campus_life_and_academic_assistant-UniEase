@@ -1,0 +1,39 @@
+{% extends 'base.html' %}
+
+{% block title %}Update Complaint - UniEase{% endblock %}
+
+{% block content %}
+<div class="page-container">
+    <div class="page-header">
+        <h1>Update Complaint</h1>
+    </div>
+
+    <div class="complaint-info">
+        <h3>{{ complaint.title }}</h3>
+        <p>{{ complaint.description }}</p>
+        <p><strong>Filed by:</strong> {{ complaint.posted_by.get_full_name }}</p>
+    </div>
+
+    <div class="form-container">
+        <form method="POST" class="standard-form">
+            {% csrf_token %}
+            <div class="form-group">
+                <label for="status">Status</label>
+                <select id="status" name="status" required>
+                    <option value="open" {% if complaint.status == 'open' %}selected{% endif %}>Open</option>
+                    <option value="in_progress" {% if complaint.status == 'in_progress' %}selected{% endif %}>In Progress</option>
+                    <option value="resolved" {% if complaint.status == 'resolved' %}selected{% endif %}>Resolved</option>
+                </select>
+            </div>
+            <div class="form-group">
+                <label for="admin_response">Admin Response</label>
+                <textarea id="admin_response" name="admin_response" rows="4">{{ complaint.admin_response }}</textarea>
+            </div>
+            <div class="form-actions">
+                <button type="submit" class="btn btn-primary">Update Complaint</button>
+                <a href="{% url 'hostel_complaints' %}" class="btn btn-secondary">Cancel</a>
+            </div>
+        </form>
+    </div>
+</div>
+{% endblock %}

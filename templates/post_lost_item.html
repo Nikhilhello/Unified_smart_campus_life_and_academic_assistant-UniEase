@@ -1,0 +1,52 @@
+{% extends 'base.html' %}
+
+{% block title %}Post Item - UniEase{% endblock %}
+
+{% block content %}
+<div class="page-container">
+    <div class="page-header">
+        <h1>Post Lost/Found Item</h1>
+    </div>
+
+    <div class="form-container">
+        <form method="POST" enctype="multipart/form-data" class="standard-form">
+            {% csrf_token %}
+            <div class="form-group">
+                <label for="item_name">Item Name</label>
+                <input type="text" id="item_name" name="item_name" required>
+            </div>
+            <div class="form-group">
+                <label for="description">Description</label>
+                <textarea id="description" name="description" rows="4" required></textarea>
+            </div>
+            <div class="form-group">
+                <label for="category">Category</label>
+                <input type="text" id="category" name="category" placeholder="e.g., Electronics, Books, ID Card" required>
+            </div>
+            <div class="form-group">
+                <label for="location">Location</label>
+                <input type="text" id="location" name="location" required>
+            </div>
+            <div class="form-group">
+                <label for="status">Status</label>
+                <select id="status" name="status" required>
+                    <option value="lost">Lost</option>
+                    <option value="found">Found</option>
+                </select>
+            </div>
+            <div class="form-group">
+                <label for="contact">Contact Number</label>
+                <input type="tel" id="contact" name="contact" required>
+            </div>
+            <div class="form-group">
+                <label for="image">Image (Optional)</label>
+                <input type="file" id="image" name="image" accept="image/*">
+            </div>
+            <div class="form-actions">
+                <button type="submit" class="btn btn-primary">Post Item</button>
+                <a href="{% url 'lost_found' %}" class="btn btn-secondary">Cancel</a>
+            </div>
+        </form>
+    </div>
+</div>
+{% endblock %}

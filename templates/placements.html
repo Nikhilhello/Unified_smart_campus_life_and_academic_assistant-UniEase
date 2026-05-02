@@ -1,0 +1,57 @@
+{% extends 'base.html' %}
+
+{% block title %}Placements - UniEase{% endblock %}
+
+{% block content %}
+<div class="page-container">
+    <div class="page-header">
+        <h1>Placement & Internship Hub</h1>
+        <div class="header-actions">
+            <a href="{% url 'learning_resources' %}" class="btn btn-secondary">Learning Resources</a>
+            {% if user.profile.role in 'faculty,admin' %}
+            <a href="{% url 'create_placement' %}" class="btn btn-primary">Post Opportunity</a>
+            {% endif %}
+        </div>
+    </div>
+
+    <div class="filters">
+        <form method="GET" class="filter-form">
+            <select name="job_type" onchange="this.form.submit()">
+                <option value="">All Opportunities</option>
+                <option value="internship">Internships</option>
+                <option value="fulltime">Full Time</option>
+            </select>
+        </form>
+    </div>
+
+    <div class="placements-list">
+        {% if placements %}
+        {% for placement in placements %}
+        <div class="placement-card">
+            <div class="placement-header">
+                <h3>{{ placement.job_title }}</h3>
+                <span class="badge badge-{{ placement.job_type }}">{{ placement.job_type|upper }}</span>
+            </div>
+            <h4>{{ placement.company_name }}</h4>
+            <p>{{ placement.description|truncatewords:20 }}</p>
+            <div class="placement-details">
+                <p><strong>Package:</strong> {{ placement.package }}</p>
+                <p><strong>Deadline:</strong> {{ placement.application_deadline }}</p>
+            </div>
+            <div class="placement-footer">
+                {% if placement.id in user_applications %}
+                <span class="badge badge-success">Applied</span>
+                {% else %}
+                <a href="{% url 'placement_detail' placement.id %}" class="btn btn-primary">View Details</a>
+                {% endif %}
+            </div>
+        </div>
+        {% endfor %}
+        {% else %}
+        <div class="empty-state-large">
+            <p>No placement opportunities available</p>
+        </div>
+        {% endif %}
+    </div>
+</div>
+{% endblock %}

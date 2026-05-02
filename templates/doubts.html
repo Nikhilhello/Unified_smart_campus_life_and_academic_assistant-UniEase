@@ -1,0 +1,53 @@
+{% extends 'base.html' %}
+
+{% block title %}Doubts - UniEase{% endblock %}
+
+{% block content %}
+<div class="page-container">
+    <div class="page-header">
+        <h1>Doubt Clearing Forum</h1>
+        <a href="{% url 'ask_doubt' %}" class="btn btn-primary">Ask Doubt</a>
+    </div>
+
+    <div class="filters">
+        <form method="GET" class="filter-form">
+            <select name="subject" onchange="this.form.submit()">
+                <option value="">All Subjects</option>
+                {% for subject in subjects %}
+                <option value="{{ subject }}">{{ subject }}</option>
+                {% endfor %}
+            </select>
+        </form>
+    </div>
+
+    <div class="doubts-list">
+        {% if doubts %}
+        {% for doubt in doubts %}
+        <div class="doubt-card">
+            <h3>
+                <a href="{% url 'doubt_detail' doubt.id %}">{{ doubt.question|truncatewords:15 }}</a>
+            </h3>
+            <div class="doubt-meta">
+                <span class="badge">{{ doubt.subject }}</span>
+                <span class="badge badge-light">{{ doubt.topic }}</span>
+            </div>
+            <div class="doubt-footer">
+                <small>
+                    {% if doubt.is_anonymous %}
+                    Posted anonymously
+                    {% else %}
+                    Posted by {{ doubt.posted_by.get_full_name }}
+                    {% endif %}
+                    | {{ doubt.created_at|timesince }} ago | {{ doubt.answers.count }} answers | {{ doubt.views }} views
+                </small>
+            </div>
+        </div>
+        {% endfor %}
+        {% else %}
+        <div class="empty-state-large">
+            <p>No doubts posted yet</p>
+        </div>
+        {% endif %}
+    </div>
+</div>
+{% endblock %}
