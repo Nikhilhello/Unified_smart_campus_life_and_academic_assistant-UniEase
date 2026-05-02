@@ -1,3 +1,6 @@
+### Next Gen Employability Program (Next Gen 4.0) -Edunet Foundation 
+#### Course: Full Stack Web Development with AI Tools | 2025 – 2026 (Dec-Feb) 
+
 # 🎓 UniEase - Unified Campus Life & Academic Assistant
 
 UniEase is a comprehensive Django-based campus management system designed to streamline university operations and enhance the student experience. It provides a unified platform for students, faculty, and administrators to manage academic, hostel, library, placement, and other campus-related activities.
