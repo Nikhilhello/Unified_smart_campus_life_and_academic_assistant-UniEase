@@ -127,6 +127,13 @@ Visit `http://127.0.0.1:8000/`
 - **Alumni Portal** - Dedicated network for alumni engagement and mentorship.
 - **AI Campus Assistant** - AI-powered Information Retrieval Assistant for campus queries.
 
+---
+<div style="display: flex; gap: 10px;">
+  <img alt="image" src="https://github.com/user-attachments/assets/a598c44f-a51f-4677-83ad-9c6539992e95" width="49.5%" />
+<img alt="image" src="https://github.com/user-attachments/assets/f407f63f-04a4-4cee-9920-e1b3b74a5f34" width="49.5%" />
+</div>
+---
+
 ## 📄 License
 Licensed under the MIT License.
 
